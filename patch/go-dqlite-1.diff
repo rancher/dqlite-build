@@ -1,0 +1,12 @@
+diff --git a/internal/bindings/build.go b/internal/bindings/build.go
+index bc64ff2..9d390fb 100644
+--- a/internal/bindings/build.go
++++ b/internal/bindings/build.go
+@@ -1,6 +1,6 @@
+ package bindings
+
+ /*
+-#cgo linux LDFLAGS: -lsqlite3 -lraft -lco -ldqlite
++#cgo linux LDFLAGS: -ldqlite -lraft -lco -lsqlite3 -luv
+ */
+ import "C"
