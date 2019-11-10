@@ -22,30 +22,10 @@ RUN rm -rf /usr/local/lib /usr/local/include
 
 # --- Build patched sqlite
 
-RUN _amalgamation="-DSQLITE_ENABLE_FTS4 \
-	-DSQLITE_ENABLE_FTS3_PARENTHESIS \
-	-DSQLITE_ENABLE_FTS3 \
-	-DSQLITE_ENABLE_FTS5 \
-	-DSQLITE_ENABLE_COLUMN_METADATA \
-	-DSQLITE_SECURE_DELETE \
-	-DSQLITE_ENABLE_UNLOCK_NOTIFY \
-	-DSQLITE_ENABLE_RTREE \
-	-DSQLITE_ENABLE_GEOPOLY \
-	-DSQLITE_USE_URI \
-	-DSQLITE_ENABLE_DBSTAT_VTAB \
-	-DSQLITE_MAX_VARIABLE_NUMBER=250000 \
-	-DSQLITE_ENABLE_JSON1" && \
-    git clone -b $SQLITE_VER https://github.com/canonical/sqlite.git && \
+RUN git clone -b $SQLITE_VER https://github.com/canonical/sqlite.git && \
     cd sqlite && \
     ls /patch/sqlite-* | xargs -r -n1 patch -p1 -i && \
-    export CFLAGS="$CFLAGS $_amalgamation" && \
-    ./configure --enable-replication $CONFIG_FLAGS \
-        --enable-threadsafe \
-		--enable-static \
-		--enable-dynamic-extensions \
-		--enable-fts3 && \
-    sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool && \
-    sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool && \
+    ./configure --enable-replication $CONFIG_FLAGS && \
     make && \
     make install
 
