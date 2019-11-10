@@ -1,4 +1,4 @@
-FROM golang:1.12.9-alpine3.10
+FROM golang:1.13.4-alpine3.10
 
 ARG SQLITE_VER=version-3.30.1+replication3
 ARG LIBCO_VER=v19.1
@@ -22,30 +22,10 @@ RUN rm -rf /usr/local/lib /usr/local/include
 
 # --- Build patched sqlite
 
-RUN _amalgamation="-DSQLITE_ENABLE_FTS4 \
-	-DSQLITE_ENABLE_FTS3_PARENTHESIS \
-	-DSQLITE_ENABLE_FTS3 \
-	-DSQLITE_ENABLE_FTS5 \
-	-DSQLITE_ENABLE_COLUMN_METADATA \
-	-DSQLITE_SECURE_DELETE \
-	-DSQLITE_ENABLE_UNLOCK_NOTIFY \
-	-DSQLITE_ENABLE_RTREE \
-	-DSQLITE_ENABLE_GEOPOLY \
-	-DSQLITE_USE_URI \
-	-DSQLITE_ENABLE_DBSTAT_VTAB \
-	-DSQLITE_MAX_VARIABLE_NUMBER=250000 \
-	-DSQLITE_ENABLE_JSON1" && \
-    git clone -b $SQLITE_VER https://github.com/canonical/sqlite.git && \
+RUN git clone -b $SQLITE_VER https://github.com/canonical/sqlite.git && \
     cd sqlite && \
     ls /patch/sqlite-* | xargs -r -n1 patch -p1 -i && \
-    export CFLAGS="$CFLAGS $_amalgamation" && \
-    ./configure --enable-replication $CONFIG_FLAGS \
-        --enable-threadsafe \
-		--enable-static \
-		--enable-dynamic-extensions \
-		--enable-fts3 && \
-    sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool && \
-    sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool && \
+    ./configure --enable-replication $CONFIG_FLAGS && \
     make && \
     make install
 
@@ -101,7 +81,7 @@ RUN mkdir -p $DIST && \
 
 # --- Perform release
 
-RUN go get github.com/drone-plugins/drone-github-release
+RUN GO111MODULE=on go get github.com/drone-plugins/drone-github-release@v1.0.0
 
 ARG GITHUB_TOKEN
 ENV GITHUB_TOKEN $GITHUB_TOKEN
