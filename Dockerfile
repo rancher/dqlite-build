@@ -1,4 +1,4 @@
-FROM golang:1.12.9-alpine3.10
+FROM golang:1.13.4-alpine3.10
 
 ARG SQLITE_VER=version-3.30.1+replication3
 ARG LIBCO_VER=v19.1
@@ -81,7 +81,7 @@ RUN mkdir -p $DIST && \
 
 # --- Perform release
 
-RUN go get github.com/drone-plugins/drone-github-release
+RUN GO111MODULE=on go get github.com/drone-plugins/drone-github-release@v1.0.0
 
 ARG GITHUB_TOKEN
 ENV GITHUB_TOKEN $GITHUB_TOKEN
