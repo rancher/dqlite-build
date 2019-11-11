@@ -11,7 +11,6 @@ ENV CONFIG_FLAGS --prefix=$PREFIX
 ENV PKG_CONFIG_PATH $PREFIX/lib/pkgconfig/
 
 WORKDIR /build
-COPY patch /patch/
 
 RUN apk -U -q --no-cache add \
     coreutils git gcc make autoconf automake build-base gperf bison flex texinfo libtool tcl help2man \
@@ -28,6 +27,10 @@ RUN git clone -b $SQLITE_VER https://github.com/canonical/sqlite.git && \
     ./configure --enable-replication $CONFIG_FLAGS && \
     make && \
     make install
+
+# --- Copy patch after sqlite, as sqlite takes the longest to compile
+
+COPY patch /patch/
 
 # --- Build libco
 

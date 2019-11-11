@@ -1,5 +1,30 @@
+diff --git a/src/server.c b/src/server.c
+index 9827ef2..2644f26 100644
+--- a/src/server.c
++++ b/src/server.c
+@@ -11,6 +11,7 @@
+ #include "replication.h"
+ #include "transport.h"
+ #include "vfs.h"
++#include <fcntl.h>
+ 
+ void raftRingLoggerWalkCb(void *data,
+ 			  raft_time time,
+@@ -274,6 +275,12 @@ int dqlite_node_set_bind_address(dqlite_node *t, const char *address)
+ 		return DQLITE_ERROR;
+ 	}
+ 
++	rv = fcntl(fd, F_SETFD, FD_CLOEXEC);
++	if (rv != 0) {
++		close(fd);
++		return DQLITE_ERROR;
++	}
++
+ 	rv = transport__stream(&t->loop, fd, &t->listener);
+ 	if (rv != 0) {
+ 		close(fd);
 diff --git a/src/vfs.c b/src/vfs.c
-index 31e138c..3bd4eab 100644
+index 3a4c205..458ab4d 100644
 --- a/src/vfs.c
 +++ b/src/vfs.c
 @@ -1,3 +1,4 @@
