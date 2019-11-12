@@ -1,0 +1,108 @@
+# Maintainer: Carlo Landmeter <clandmeter@gmail.com>
+# Contributor: Łukasz Jendrysik <scadu@yandex.com>
+pkgname=sqlite
+pkgver=3.30.1
+pkgrel=0
+pkgdesc="C library that implements an SQL database engine"
+url="https://www.sqlite.org/"
+arch="all"
+license="Public-Domain"
+makedepends="readline-dev"
+subpackages="$pkgname-static $pkgname-doc $pkgname-dev $pkgname-libs"
+
+# compute _ver
+_a=${pkgver%%.*}
+_b=${pkgver#${_a}.}
+_b=${_b%%.*}
+_c=${pkgver#${_a}.${_b}.}
+_c=${_c%%.*}
+case $pkgver in
+	*.*.*.*)_d=${pkgver##*.};;
+	*.*.*)	_d=0;;
+esac
+[ $_b -lt 10 ] && _b=0$_b
+[ $_c -lt 10 ] && _c=0$_c
+[ $_d -lt 10 ] && _d=0$_d
+_ver=${_a}${_b}${_c}${_d}
+
+# these variables depend on _ver being set
+builddir="$srcdir/$pkgname-autoconf-$_ver"
+source="https://github.com/canonical/sqlite/releases/download/version-3.30.1%2Breplication3/sqlite-src-3.30.1.tar.gz
+	license.txt
+	"
+
+# secfixes:
+#   3.28.0-r0:
+#   - CVE-2019-5018
+#   - CVE-2019-8457
+
+# additional CFLAGS to set
+_amalgamation="-DSQLITE_ENABLE_FTS4 \
+    -DSQLITE_ENABLE_WAL_REPLICAtION \
+    -DSQLITE_ENABLE_WAL_REPLICATION \
+	-DSQLITE_ENABLE_FTS3_PARENTHESIS \
+	-DSQLITE_ENABLE_FTS3 \
+	-DSQLITE_ENABLE_FTS5 \
+	-DSQLITE_ENABLE_COLUMN_METADATA \
+	-DSQLITE_SECURE_DELETE \
+	-DSQLITE_ENABLE_UNLOCK_NOTIFY \
+	-DSQLITE_ENABLE_RTREE \
+	-DSQLITE_ENABLE_GEOPOLY \
+	-DSQLITE_USE_URI \
+	-DSQLITE_ENABLE_DBSTAT_VTAB \
+	-DSQLITE_MAX_VARIABLE_NUMBER=250000 \
+	-DSQLITE_ENABLE_JSON1"
+
+build() {
+	cd "$builddir"
+
+	export CFLAGS="$CFLAGS $_amalgamation"
+	./configure \
+		--build="$CBUILD" \
+		--host="$CHOST" \
+		--prefix=/usr \
+		--enable-threadsafe \
+		--enable-readline \
+		--enable-static \
+		--enable-dynamic-extensions \
+		--enable-fts3
+
+	# rpath removal
+	sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
+	sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
+
+	make
+}
+
+check() {
+	cd "$builddir"
+	make check
+}
+
+package() {
+	cd "$builddir"
+
+	make -j1 DESTDIR="$pkgdir" install
+
+	install -Dm0644 sqlite3.1 \
+		"$pkgdir"/usr/share/man/man1/sqlite3.1
+	install -Dm644 "$srcdir"/license.txt \
+		"$pkgdir"/usr/share/licenses/$pkgname/license.txt
+}
+
+libs() {
+	replaces="sqlite"
+	pkgdesc="Sqlite3 library"
+
+	mkdir -p "$subpkgdir"/usr
+	mv "$pkgdir"/usr/lib "$subpkgdir"/usr/
+}
+
+static() {
+	pkgdesc="Sqlite3 static library"
+	mkdir -p "$subpkgdir"/usr/lib
+	mv "$pkgdir"/usr/lib/lib*.a "$subpkgdir"/usr/lib/
+}
+
+sha512sums="ab51158309b540f2709ce76e836f8cd3e18cada126b12c036fe35ae1e7f5324a94f9131a27c5bf275d80505c67761fa1c5abab3fb3ba04c712f0871f9424b1ec  sqlite-src-3.30.1.tar.gz
+5bde14bec5bf18cc686b8b90a8b2324c8c6600bca1ae56431a795bb34b8b5ae85527143f3b5f0c845c776bce60eaa537624104cefc3a47b3820d43083f40c6e9  license.txt"

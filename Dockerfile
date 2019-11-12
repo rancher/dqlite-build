@@ -15,22 +15,24 @@ WORKDIR /build
 RUN apk -U -q --no-cache add \
     coreutils git gcc make autoconf automake build-base gperf bison flex texinfo libtool tcl help2man \
     curl wget tar sed gawk zip unzip xz bash vim less file python3 py3-pip \
-    musl-dev gettext-dev ncurses-dev openssl-dev libffi-dev libseccomp-dev libuv-dev libuv-static
+    musl-dev gettext-dev ncurses-dev openssl-dev libffi-dev libseccomp-dev libuv-dev libuv-static abuild
 
 RUN rm -rf /usr/local/lib /usr/local/include
 
+COPY patch /patch/
+
 # --- Build patched sqlite
 
-RUN git clone -b $SQLITE_VER https://github.com/canonical/sqlite.git && \
-    cd sqlite && \
-    ls /patch/sqlite-* | xargs -r -n1 patch -p1 -i && \
-    ./configure --enable-replication $CONFIG_FLAGS && \
-    make && \
-    make install
-
-# --- Copy patch after sqlite, as sqlite takes the longest to compile
-
-COPY patch /patch/
+RUN apk add sudo
+RUN adduser -h /home/build -G abuild -D -s /bin/bash build
+COPY sqlite sqlite
+RUN cd sqlite && \
+    chown -R build . && \
+    sudo -u build -- abuild-keygen -a -n && \
+    sudo -u build -- abuild -r
+RUN apk add --allow-untrusted /home/build/packages/build/*/*.apk
+RUN mkdir -p $PREFIX/packages && \
+    cp /home/build/packages/build/*/*.apk $PREFIX/packages
 
 # --- Build libco
 
@@ -80,7 +82,7 @@ ARG DRONE_STAGE_ARCH
 ENV ARCH $DRONE_STAGE_ARCH
 
 RUN mkdir -p $DIST && \
-    tar czf $DIST/dqlite-$ARCH.tgz $PREFIX/lib $PREFIX/include
+    tar czf $DIST/dqlite-$ARCH.tgz $PREFIX/lib $PREFIX/include $PREFIX/packages
 
 # --- Perform release
 
