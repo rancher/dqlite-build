@@ -27,7 +27,7 @@ _ver=${_a}${_b}${_c}${_d}
 
 # these variables depend on _ver being set
 builddir="$srcdir/$pkgname-autoconf-$_ver"
-source="https://github.com/canonical/sqlite/releases/download/version-3.30.1%2Breplication3/sqlite-src-3.30.1.tar.gz
+source="https://github.com/canonical/sqlite/releases/download/version-3.30.1%2Breplication4/sqlite-src-3.30.1.tar.gz
 	license.txt
 	"
 
@@ -104,5 +104,5 @@ static() {
 	mv "$pkgdir"/usr/lib/lib*.a "$subpkgdir"/usr/lib/
 }
 
-sha512sums="ab51158309b540f2709ce76e836f8cd3e18cada126b12c036fe35ae1e7f5324a94f9131a27c5bf275d80505c67761fa1c5abab3fb3ba04c712f0871f9424b1ec  sqlite-src-3.30.1.tar.gz
+sha512sums="103a2b31986e0dc8f3d180af336dc54cd10ba71a8c4c164f87116426c43451646c36037b96fc20499d97427b8328c5edc863f05fb031a7fb75e988d9a165d90b  sqlite-src-3.30.1.tar.gz
 5bde14bec5bf18cc686b8b90a8b2324c8c6600bca1ae56431a795bb34b8b5ae85527143f3b5f0c845c776bce60eaa537624104cefc3a47b3820d43083f40c6e9  license.txt"
