@@ -14,14 +14,14 @@ steps:
     dry_run: true
 - name: docker-publish
   image: plugins/docker
-  build_args_from_env:
-  - GITHUB_TOKEN
-  - DRONE_BUILD_EVENT
-  - DRONE_REPO_OWNER
-  - DRONE_REPO_NAME
-  - DRONE_COMMIT_REF
-  - DRONE_STAGE_ARCH
   settings:
+    build_args_from_env:
+    - GITHUB_TOKEN
+    - DRONE_BUILD_EVENT
+    - DRONE_REPO_OWNER
+    - DRONE_REPO_NAME
+    - DRONE_COMMIT_REF
+    - DRONE_STAGE_ARCH
     password:
       from_secret: docker_password
     repo: "rancher/dqlite-build"
@@ -53,14 +53,14 @@ steps:
     dry_run: true
 - name: docker-publish
   image: plugins/docker
-  build_args_from_env:
-  - GITHUB_TOKEN
-  - DRONE_BUILD_EVENT
-  - DRONE_REPO_OWNER
-  - DRONE_REPO_NAME
-  - DRONE_COMMIT_REF
-  - DRONE_STAGE_ARCH
   settings:
+    build_args_from_env:
+    - GITHUB_TOKEN
+    - DRONE_BUILD_EVENT
+    - DRONE_REPO_OWNER
+    - DRONE_REPO_NAME
+    - DRONE_COMMIT_REF
+    - DRONE_STAGE_ARCH
     password:
       from_secret: docker_password
     repo: "rancher/dqlite-build"
@@ -92,14 +92,14 @@ steps:
     dry_run: true
 - name: docker-publish
   image: plugins/docker
-  build_args_from_env:
-  - GITHUB_TOKEN
-  - DRONE_BUILD_EVENT
-  - DRONE_REPO_OWNER
-  - DRONE_REPO_NAME
-  - DRONE_COMMIT_REF
-  - DRONE_STAGE_ARCH
   settings:
+    build_args_from_env:
+    - GITHUB_TOKEN
+    - DRONE_BUILD_EVENT
+    - DRONE_REPO_OWNER
+    - DRONE_REPO_NAME
+    - DRONE_COMMIT_REF
+    - DRONE_STAGE_ARCH
     password:
       from_secret: docker_password
     repo: "rancher/dqlite-build"
