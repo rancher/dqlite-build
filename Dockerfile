@@ -78,8 +78,34 @@ RUN go get -d github.com/canonical/go-dqlite && \
 
 ENV DIST /dist/artifacts
 
+ARG DRONE_STAGE_ARCH
+ENV ARCH $DRONE_STAGE_ARCH
+
 RUN mkdir -p $DIST && \
-    tar czf $DIST/dqlite.tgz $PREFIX/lib $PREFIX/include $PREFIX/packages
+    tar czf $DIST/dqlite-$ARCH.tgz $PREFIX/lib $PREFIX/include $PREFIX/packages
+
+# --- Perform release
+
+RUN GO111MODULE=on go get github.com/drone-plugins/drone-github-release@v1.0.0
+
+ARG GITHUB_TOKEN
+ENV GITHUB_TOKEN $GITHUB_TOKEN
+
+ARG DRONE_BUILD_EVENT
+ENV DRONE_BUILD_EVENT $DRONE_BUILD_EVENT
+
+ARG DRONE_REPO_OWNER
+ENV DRONE_REPO_OWNER $DRONE_REPO_OWNER
+
+ARG DRONE_REPO_NAME
+ENV DRONE_REPO_NAME $DRONE_REPO_NAME
+
+ARG DRONE_COMMIT_REF
+ENV DRONE_COMMIT_REF $DRONE_COMMIT_REF
+
+RUN if [ "$DRONE_BUILD_EVENT" = "tag" ]; then \
+        drone-github-release --files="$DIST/*"; \
+    fi
 
 FROM scratch
-COPY --from=build /dist/artifacts/dqlite.tgz /dist/artifacts/
+COPY --from=build /dist/artifacts/dqlite*.tgz /dist/artifacts/dqlite.tgz
