@@ -14,6 +14,9 @@ steps:
     dry_run: true
 - name: docker-publish
   image: plugins/docker
+  environment:
+    GITHUB_TOKEN:
+      from_secret: GITHUB_TOKEN
   settings:
     build_args_from_env:
     - GITHUB_TOKEN
@@ -53,6 +56,9 @@ steps:
     dry_run: true
 - name: docker-publish
   image: plugins/docker
+  environment:
+    GITHUB_TOKEN:
+      from_secret: GITHUB_TOKEN
   settings:
     build_args_from_env:
     - GITHUB_TOKEN
@@ -92,6 +98,9 @@ steps:
     dry_run: true
 - name: docker-publish
   image: plugins/docker
+  environment:
+    GITHUB_TOKEN:
+      from_secret: GITHUB_TOKEN
   settings:
     build_args_from_env:
     - GITHUB_TOKEN
