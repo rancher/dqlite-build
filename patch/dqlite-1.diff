@@ -1,14 +1,13 @@
 diff --git a/src/leader.c b/src/leader.c
-index 6b1d17f..36b4e18 100644
+index 6b1d17f..74c8895 100644
 --- a/src/leader.c
 +++ b/src/leader.c
-@@ -254,6 +254,9 @@ void leader__close(struct leader *l)
+@@ -253,7 +253,7 @@ void leader__close(struct leader *l)
+ 		l->exec->status = SQLITE_ERROR;
  		maybeExecDone(l->exec);
  	}
- 	rc = sqlite3_close(l->conn);
-+	if(rc == SQLITE_BUSY) {
-+		rc = sqlite3_close_v2(l->conn);
-+	}
+-	rc = sqlite3_close(l->conn);
++	rc = sqlite3_close_v2(l->conn);
  	assert(rc == 0);
 
  	/* TODO: untested: this is a temptative fix for the zombie tx assertion
