@@ -2,7 +2,7 @@ diff --git a/src/leader.c b/src/leader.c
 index 6b1d17f..36b4e18 100644
 --- a/src/leader.c
 +++ b/src/leader.c
-@@ -254,6 +254,10 @@ void leader__close(struct leader *l)
+@@ -254,6 +254,9 @@ void leader__close(struct leader *l)
  		maybeExecDone(l->exec);
  	}
  	rc = sqlite3_close(l->conn);
