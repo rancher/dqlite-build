@@ -53,9 +53,8 @@ RUN git clone -b $RAFT_VER https://github.com/canonical/raft.git && \
 
 # --- Build dqlite
 
-RUN git clone --depth 1 https://github.com/canonical/dqlite.git && \
+RUN git clone --depth 1 https://github.com/canonical/dqlite.git -b $DQLITE_VER && \
     cd dqlite && \
-    git checkout $DQLITE_VER && \
     ls /patch/dqlite-* | xargs -r -n1 patch -p1 -i && \
     autoreconf -i && \
     ./configure $CONFIG_FLAGS && \

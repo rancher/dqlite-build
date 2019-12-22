@@ -7,9 +7,8 @@ index 6b1d17f..36b4e18 100644
  	}
  	rc = sqlite3_close(l->conn);
 +	if(rc == SQLITE_BUSY) {
-+		l->db->config->logger.emit(NULL, DQLITE_WARN, "db was busy, deffering leader close");
 +		rc = sqlite3_close_v2(l->conn);
 +	}
  	assert(rc == 0);
- 
+
  	/* TODO: untested: this is a temptative fix for the zombie tx assertion
