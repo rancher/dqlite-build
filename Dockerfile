@@ -1,9 +1,9 @@
 FROM golang:1.13.4-alpine3.10 as build
 
 ARG LIBCO_VER=v20
-ARG RAFT_VER=v0.9.13
-ARG DQLITE_VER=v1.2.1
-ARG GO_DQLITE_VER=v1.2.0
+ARG RAFT_VER=6721b84811be901ef0025d24c8ab1b468f39d0bf
+ARG DQLITE_VER=v1.3.1
+ARG GO_DQLITE_VER=v1.3.0
 
 ENV PREFIX /usr/local
 ENV CONFIG_FLAGS --prefix=$PREFIX
@@ -43,8 +43,9 @@ RUN git clone -b $LIBCO_VER https://github.com/canonical/libco.git && \
 
 # --- Build raft
 
-RUN git clone -b $RAFT_VER https://github.com/canonical/raft.git && \
+RUN git clone https://github.com/canonical/raft.git && \
     cd raft && \
+    git checkout $RAFT_VER && \
     ls /patch/raft-* | xargs -r -n1 patch -p1 -i && \
     autoreconf -i && \
     ./configure $CONFIG_FLAGS && \
