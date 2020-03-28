@@ -126,6 +126,48 @@ steps:
 
 ---
 kind: pipeline
+name: ppc64le
+
+platform:
+  os: linux
+  arch: ppc64le
+
+steps:
+- name: docker-build
+  image: plugins/docker
+  settings:
+    repo: "rancher/dqlite-build"
+    dry_run: true
+- name: docker-publish
+  image: plugins/docker
+  environment:
+    GITHUB_TOKEN:
+      from_secret: GITHUB_TOKEN
+  settings:
+    build_args_from_env:
+    - GITHUB_TOKEN
+    - DRONE_BUILD_EVENT
+    - DRONE_REPO_OWNER
+    - DRONE_REPO_NAME
+    - DRONE_COMMIT_REF
+    - DRONE_STAGE_ARCH
+    password:
+      from_secret: docker_password
+    repo: "rancher/dqlite-build"
+    tag: "${DRONE_TAG}-ppc64le"
+    username:
+      from_secret: docker_username
+  when:
+    instance:
+    - drone-publish.rancher.io
+    ref:
+    - refs/head/master
+    - refs/tags/*
+    event:
+    - tag
+
+---
+kind: pipeline
 name: manifest
 
 platform:
@@ -144,6 +186,7 @@ steps:
       - linux/amd64
       - linux/arm64
       - linux/arm
+      - linux/ppc64le
     target: "rancher/dqlite-build:${DRONE_TAG}"
     template: "rancher/dqlite-build:${DRONE_TAG}-ARCH"
   when:
@@ -159,3 +202,4 @@ depends_on:
 - amd64
 - arm64
 - arm
+- ppc64le
