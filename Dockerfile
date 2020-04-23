@@ -69,6 +69,7 @@ RUN go get -d github.com/canonical/go-dqlite && \
     cd /go/src/github.com/canonical/go-dqlite && \
     git checkout $GO_DQLITE_VER && \
     ls /patch/go-dqlite-* | xargs -r -n1 patch -p1 -i && \
+    ( [ -f go.mod ] || go mod init ) && \
     go install \
         -tags libsqlite3 \
         -ldflags "-w -s -extldflags '-static'" \
